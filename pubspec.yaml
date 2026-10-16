@@ -20,8 +20,20 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
   assets:
     - assets/marca/
+
+# Ícone do app no Android: `dart run flutter_launcher_icons`
+# Ícone adaptativo (Android 8+): o celular recorta no formato do sistema (redondo, gota…)
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: marca/icone_app_1024.png
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: marca/icone_app_1024.png
+  adaptive_icon_foreground_inset: 20
+  min_sdk_android: 21
