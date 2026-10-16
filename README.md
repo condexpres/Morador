@@ -22,10 +22,6 @@ O app abre em **tela cheia** (as barras do celular aparecem ao deslizar a borda)
 | Comunidade | Publicar e responder mensagens | REQ-09 |
 | Perfil | Foto (galeria ou câmera), preferência de entrega, pessoas autorizadas, modo escuro, alterar senha, conta Google, avaliação | REQ-12, REQ-13 |
 
-**Contas:**
-- Moradores são cadastrados pelo síndico no site e recebem uma senha provisória:
-  no primeiro acesso, o app pede para criar a própria senha.
-- Porteiros e síndico não entram no app: eles usam o site.
 
 ## Identidade visual
 
