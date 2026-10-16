@@ -1,0 +1,14 @@
+Como a logo foi feita (para regerar, se precisar):
+
+1. logo_original.png   → a logo enviada pelo grupo.
+2. recortar_mao.py      → recorta a mão da original e amplia com bordas limpas (saida/mao.png).
+3. texto_original.py    → monta o texto com as letras originais:
+                          EXPRES → EXPRESS (repete o S), ENVÍO → ENVIO e
+                          CONDOMINIO → CONDOMÍNIO (o acento muda de lugar).
+4. gerar.py             → junta caixa e linhas (vetor) + mão + texto nos SVGs da logo.
+5. render.js            → converte os SVGs em PNG (precisa de Node + Playwright).
+
+Ordem: python3 recortar_mao.py logo_original.png saida/mao.png
+       python3 texto_original.py logo_original.png saida
+       python3 gerar.py saida
+Cores: verde-água #008484, laranja #CC4818, amarelo #E8A632, verde-água claro #66C6C2.
