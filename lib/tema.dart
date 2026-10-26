@@ -32,6 +32,7 @@ class TemaCondexpress {
       surface: escuro ? const Color(0xFF18181B) : Colors.white,
     );
     final raio = BorderRadius.circular(12);
+    // No escuro, o verde-água fica mais claro para manter o contraste dos textos
     final corTexto = escuro ? const Color(0xFF34BDB4) : Cores.primaria;
     final borda = escuro ? const Color(0xFF2E2E33) : const Color(0xFFEBEBEB);
 
@@ -80,14 +81,14 @@ class TemaCondexpress {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: esquema.surface,
-        indicatorColor: Cores.primaria.withOpacity(0.12),
-        labelTextStyle: MaterialStateProperty.resolveWith((estados) => TextStyle(
+        indicatorColor: Cores.primaria.withValues(alpha: 0.12),
+        labelTextStyle: WidgetStateProperty.resolveWith((estados) => TextStyle(
               fontSize: 12,
-              fontWeight: estados.contains(MaterialState.selected) ? FontWeight.w700 : FontWeight.w500,
-              color: estados.contains(MaterialState.selected) ? Cores.primaria : esquema.onSurfaceVariant,
+              fontWeight: estados.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500,
+              color: estados.contains(WidgetState.selected) ? Cores.primaria : esquema.onSurfaceVariant,
             )),
-        iconTheme: MaterialStateProperty.resolveWith((estados) => IconThemeData(
-              color: estados.contains(MaterialState.selected) ? Cores.primaria : esquema.onSurfaceVariant,
+        iconTheme: WidgetStateProperty.resolveWith((estados) => IconThemeData(
+              color: estados.contains(WidgetState.selected) ? Cores.primaria : esquema.onSurfaceVariant,
             )),
       ),
       snackBarTheme: SnackBarThemeData(

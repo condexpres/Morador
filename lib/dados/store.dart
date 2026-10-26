@@ -7,6 +7,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'modelos.dart';
 import 'servidor.dart';
 
+/// [Prova] Termo de uso: o mesmo texto do site (o hash confere com o do site)
+const termoVersao = '1.0';
+const termoTexto = [
+    "O Condexpress é o meio oficial adotado pelo condomínio para registrar o recebimento e a entrega de encomendas na portaria.",
+    "Cada registro (foto do pacote, data e hora do servidor, quem registrou, código de retirada e foto de quem retira) é gravado de forma que não pode ser alterado nem apagado, e serve como prova do recebimento e da entrega.",
+    "O código de retirada é pessoal. Quem informar o código será considerado autorizado a retirar a encomenda, respeitando a minha preferência de entrega.",
+    "Concordo que os registros eletrônicos do Condexpress têm validade como prova entre mim e o condomínio (Medida Provisória 2.200-2/2001, art. 10, § 2º).",
+    "Meus dados pessoais são usados apenas para a gestão de encomendas, conforme a Lei Geral de Proteção de Dados (Lei 13.709/2018). Posso pedir acesso e correção à administração.",
+];
+const termoHash = 'b1c07634a4713dcebbe1b86feb47b8c19a98e342870b710a3c2d4b0f5dfc7cd4';
+
 /// Estado do app do morador.
 ///
 /// Os dados ficam no Supabase, o mesmo banco do site da portaria e do síndico:
@@ -61,6 +72,9 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Morador get perfil => conta!.perfil;
+
+  /// O morador ainda não aceitou a versão atual do termo de uso
+  bool get precisaTermo => conta != null && perfil.termoAceito?['versao'] != termoVersao;
   String get _id => conta!.id;
 
   // ---------------------------------------------------------------- Sessão
@@ -279,6 +293,25 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
         await _servidor.atualizar('perfis', _id, {'dados': dados});
         _dadosPerfil = dados;
       });
+
+  /// [Prova] Aceite do termo de uso, registrado no servidor com data, hora e hash
+  Future<String?> aceitarTermo() async {
+    try {
+      final r = await _servidor.aceitarTermo(termoVersao, termoHash);
+      perfil.termoAceito = {
+        'versao': termoVersao,
+        'em': DateTime.tryParse('${r['criado_em']}')?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
+        'hash': r['hash'],
+      };
+      notifyListeners();
+      return await _salvarPerfil();
+    } on ErroServidor catch (e) {
+      return e.mensagem;
+    }
+  }
+
+  /// [Prova] Registro oficial da encomenda (eventos e integridade), conferido no servidor
+  Future<Map<String, dynamic>?> verificarRegistro(String codigo) => _servidor.verificarRegistro(codigo);
 
   // ---------------------------------------------------------------- Perfil
   void definirTema(ThemeMode modo) {

@@ -66,6 +66,10 @@ void abrirDetalhes(BuildContext context, Encomenda e) {
             const SizedBox(height: 10),
             for (var i = 0; i < e.eventos.length; i++) _ItemLinhaDoTempo(e.eventos[i], ultimo: i == e.eventos.length - 1),
             const SizedBox(height: 16),
+            Text('Registro oficial', style: tema.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+            const SizedBox(height: 10),
+            _RegistroOficial(e.codigo),
+            const SizedBox(height: 16),
             OutlinedButton.icon(
               onPressed: () => abrirComprovante(ctx, e, entrega: false),
               icon: const Icon(Icons.receipt_long_outlined),
@@ -232,4 +236,73 @@ class _SemFoto extends StatelessWidget {
           Text('Foto do pacote tirada pela portaria', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13)),
         ]),
       );
+}
+
+/// [Prova] Registro oficial conferido no servidor: eventos que não podem ser
+/// alterados, encadeados por hash. Mostra se a corrente está íntegra.
+class _RegistroOficial extends StatefulWidget {
+  const _RegistroOficial(this.codigo);
+  final String codigo;
+
+  @override
+  State<_RegistroOficial> createState() => _RegistroOficialState();
+}
+
+class _RegistroOficialState extends State<_RegistroOficial> {
+  late final Future<Map<String, dynamic>?> _registro = StoreScope.ler(context).verificarRegistro(widget.codigo);
+
+  static const _tipos = {'recebida': 'Recebida', 'corrigida': 'Corrigida', 'entregue': 'Entregue', 'cancelada': 'Cancelada', 'reaberta': 'Reaberta'};
+  static String _hashCurto(Object? h) => '$h'.padRight(16).substring(0, 16).replaceAllMapped(RegExp(r'(.{4})(?=.)'), (m) => '${m[1]} ');
+
+  @override
+  Widget build(BuildContext context) {
+    final suave = Theme.of(context).colorScheme.onSurfaceVariant;
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: _registro,
+      builder: (context, s) {
+        if (s.connectionState != ConnectionState.done) {
+          return Text('Conferindo o registro no servidor…', style: TextStyle(color: suave, fontSize: 13));
+        }
+        final r = s.data;
+        if (r == null || r['encontrado'] != true) {
+          return Text(r == null ? 'Não foi possível conferir o registro agora.' : 'Registro anterior à autenticação eletrônica.',
+              style: TextStyle(color: suave, fontSize: 13));
+        }
+        final integro = r['integro'] == true;
+        final cor = integro ? Cores.ok : Cores.erro;
+        final eventos = [for (final e in (r['eventos'] as List? ?? const [])) Map<String, dynamic>.from(e as Map)];
+        return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: cor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Icon(integro ? Icons.verified_user_outlined : Icons.error_outline, color: cor),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(integro ? 'Registro íntegro' : 'Registro com divergência', style: TextStyle(fontWeight: FontWeight.w800, color: cor)),
+                  Text(integro ? 'Nenhum evento foi alterado desde que foi gravado.' : 'A corrente de autenticação não confere: avise a administração.',
+                      style: const TextStyle(fontSize: 13)),
+                ]),
+              ),
+            ]),
+          ),
+          const SizedBox(height: 8),
+          for (final ev in eventos)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('${_tipos[ev['tipo']] ?? ev['tipo']} · ${dataHora(DateTime.parse('${ev['em']}').toLocal())}',
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
+                Text([
+                  'por ${ev['porteiro'] ?? ev['por']}',
+                  if (ev['retirado_por'] != null) 'retirada por ${ev['retirado_por']}',
+                ].join(' · '), style: TextStyle(color: suave, fontSize: 13)),
+                Text('Autenticação: ${_hashCurto(ev['hash'])}', style: TextStyle(color: suave, fontSize: 12, fontFamily: 'monospace')),
+              ]),
+            ),
+        ]);
+      },
+    );
+  }
 }

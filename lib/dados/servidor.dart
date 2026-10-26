@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -15,7 +14,8 @@ const supabaseChave = 'sb_publishable_-2ICfcwf7mYfnmbbp4TsMQ_nJnwboVo';
 /// Precisa estar em Supabase → Authentication → URL Configuration → Redirect URLs.
 const retornoGoogleCelular = 'br.com.condexpress.morador://login-callback';
 
-/// Tudo o que o app pede ao servidor. O [ServidorSupabase] fala com o banco de verdade.
+/// Tudo o que o app pede ao servidor. O [ServidorSupabase] fala com o banco de
+/// verdade; os testes usam um servidor em memória com o mesmo comportamento.
 /// As linhas seguem o formato das tabelas: {id, ..., dados: {...}}.
 abstract class Servidor {
   /// Id da conta logada (null = ninguém logado)
@@ -41,6 +41,12 @@ abstract class Servidor {
   Future<void> atualizar(String tabela, String id, Map<String, dynamic> campos);
   Future<void> apagar(String tabela, String id);
   Future<void> chamar(String funcao);
+
+  /// Confere no servidor o registro de prova de uma encomenda (corrente de hashes)
+  Future<Map<String, dynamic>?> verificarRegistro(String codigo);
+
+  /// Grava o aceite do termo de uso (o servidor põe data, hora e hash)
+  Future<Map<String, dynamic>> aceitarTermo(String versao, String textoHash);
 
   /// Liga o tempo real: [aoMudar] é chamado quando algo muda no banco
   void escutar(VoidCallback aoMudar);
@@ -215,6 +221,20 @@ class ServidorSupabase implements Servidor {
 
   @override
   Future<void> chamar(String funcao) => _tentar(() => _sb.rpc(funcao));
+
+  @override
+  Future<Map<String, dynamic>?> verificarRegistro(String codigo) async {
+    try {
+      final r = await _sb.rpc('verificar_registro', params: {'p_codigo': codigo});
+      return r is Map ? Map<String, dynamic>.from(r) : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> aceitarTermo(String versao, String textoHash) => _tentar(() async =>
+      await _sb.from('aceites_termo').insert({'versao': versao, 'texto_hash': textoHash}).select('hash, criado_em').single());
 
   @override
   void escutar(VoidCallback aoMudar) {

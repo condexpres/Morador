@@ -81,17 +81,22 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
           ),
         ]),
         actions: [
+          IconButton(
+            tooltip: 'Notificações',
+            onPressed: () => _abrirNotificacoes(context),
+            icon: Badge(
+              isLabelVisible: conta.naoLidas > 0,
+              label: Text('${conta.naoLidas}'),
+              backgroundColor: Cores.destaque,
+              child: const Icon(Icons.notifications_none),
+            ),
+          ),
           Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: IconButton(
-              tooltip: 'Notificações',
-              onPressed: () => _abrirNotificacoes(context),
-              icon: Badge(
-                isLabelVisible: conta.naoLidas > 0,
-                label: Text('${conta.naoLidas}'),
-                backgroundColor: Cores.destaque,
-                child: const Icon(Icons.notifications_none),
-              ),
+            padding: const EdgeInsets.only(right: 12, left: 4),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () => setState(() => _aba = 3),
+              child: Avatar(nome: conta.perfil.nome, foto: conta.perfil.foto, tamanho: 38),
             ),
           ),
         ],
@@ -117,16 +122,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
           ),
           const NavigationDestination(icon: Icon(Icons.assignment_outlined), selectedIcon: Icon(Icons.assignment), label: 'Avisar compra'),
           const NavigationDestination(icon: Icon(Icons.chat_bubble_outline), selectedIcon: Icon(Icons.chat_bubble), label: 'Comunidade'),
-          // Foto do morador na própria aba: um só caminho até o Perfil
-          NavigationDestination(
-            icon: Avatar(nome: conta.perfil.nome, foto: conta.perfil.foto, tamanho: 26),
-            selectedIcon: Container(
-              padding: const EdgeInsets.all(2),
-              decoration: const BoxDecoration(shape: BoxShape.circle, color: Cores.primaria),
-              child: Avatar(nome: conta.perfil.nome, foto: conta.perfil.foto, tamanho: 24),
-            ),
-            label: 'Perfil',
-          ),
+          const NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),
     );

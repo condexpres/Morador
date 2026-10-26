@@ -268,6 +268,7 @@ class Morador {
     this.foto,
     this.google,
     this.deveTrocarSenha = false,
+    this.termoAceito,
     List<Autorizado>? autorizados,
   }) : autorizados = autorizados ?? [];
 
@@ -283,6 +284,9 @@ class Morador {
 
   /// Verdadeiro enquanto o morador usa a senha provisória gerada pela administração
   bool deveTrocarSenha;
+
+  /// Aceite do termo de uso: versão, data e hora (servidor) e hash do aceite
+  Map<String, dynamic>? termoAceito;
   final List<Autorizado> autorizados;
 
   String get unidade => 'Bloco $bloco · Apto $apto';
@@ -296,6 +300,7 @@ class Morador {
         foto: j['foto'] as String?,
         google: j['google'] as String?,
         deveTrocarSenha: j['deveTrocarSenha'] == true,
+        termoAceito: j['termoAceito'] is Map ? Map<String, dynamic>.from(j['termoAceito'] as Map) : null,
         autorizados: [for (final a in (j['autorizados'] as List? ?? const [])) Autorizado.deServidor(Map<String, dynamic>.from(a as Map))],
       );
 
@@ -310,6 +315,7 @@ class Morador {
     foto == null ? d.remove('foto') : d['foto'] = foto;
     google == null ? d.remove('google') : d['google'] = google;
     deveTrocarSenha ? d['deveTrocarSenha'] = true : d.remove('deveTrocarSenha');
+    termoAceito == null ? d.remove('termoAceito') : d['termoAceito'] = termoAceito;
     return d;
   }
 }

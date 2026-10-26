@@ -65,9 +65,10 @@ No navegador funciona direto. No Android e no iPhone, o Google devolve a pessoa 
 endereço `br.com.condexpress.morador://login-callback`. Ele precisa estar liberado no Supabase:
 **Authentication → URL Configuration → Redirect URLs → Add URL**.
 
-## Verificação
+## Testes
 
 ```bash
+flutter test      # 20 testes (usam um servidor em memória, sem internet)
 flutter analyze   # análise estática do código
 ```
 
@@ -80,7 +81,8 @@ lib/
 ├── dados/
 │   ├── modelos.dart          → Encomenda, Notificação, Morador… (no formato do banco)
 │   ├── store.dart            → estado do app e regras (login, senha, compras, avaliação…)
-│   └── servidor.dart         → conversa com o Supabase (login, tabelas, fotos, tempo real)
+│   ├── servidor.dart         → conversa com o Supabase (login, tabelas, fotos, tempo real)
+│   └── servidor_memoria.dart → servidor de mentira usado nos testes
 ├── telas/                    → uma tela por arquivo
 ├── widgets/
 │   ├── componentes.dart      → peças reutilizáveis (avatar, etiquetas, rastreamento, código…)

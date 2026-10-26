@@ -7,6 +7,7 @@ import 'tema.dart';
 import 'telas/login.dart';
 import 'telas/primeiro_acesso.dart';
 import 'telas/principal.dart';
+import 'telas/termo.dart';
 
 /// Condexpress – app do morador.
 /// Os comentários [REQ-xx], [RNF xx] e [RD xx] indicam os requisitos do
@@ -15,7 +16,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Tela cheia: esconde as barras do sistema (deslize da borda para mostrá-las)
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
+  AppLifecycleListener(onResume: () => SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky));
   final store = await AppStore.carregar(await ServidorSupabase.iniciar());
   runApp(CondexpressApp(store: store));
 }
@@ -41,7 +42,9 @@ class CondexpressApp extends StatelessWidget {
             themeMode: store.modoTema,
             home: conta == null
                 ? const TelaLogin()
-                : conta.perfil.deveTrocarSenha
+                : store.precisaTermo
+                    ? const TelaTermo()
+                    : conta.perfil.deveTrocarSenha
                     ? const TelaPrimeiroAcesso()
                     : const TelaPrincipal(),
           );
