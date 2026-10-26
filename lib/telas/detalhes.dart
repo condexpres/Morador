@@ -59,6 +59,7 @@ void abrirDetalhes(BuildContext context, Encomenda e) {
             const SizedBox(height: 12),
             LinhaInfo('Remetente', e.remetente),
             LinhaInfo('Descrição', e.descricao),
+            if (e.rastreio.isNotEmpty) LinhaInfo('Rastreio', e.rastreio),
             LinhaInfo('Recebida por', e.recebidaPor),
             if (!e.naPortaria) LinhaInfo('Retirada por', e.retiradoPor ?? '—'),
             const SizedBox(height: 16),
@@ -137,6 +138,7 @@ void abrirComprovante(BuildContext context, Encomenda e, {required bool entrega}
           LinhaInfo('Encomenda', e.codigo),
           LinhaInfo('Destinatário', '${perfil.nome} · ${perfil.unidade}'),
           LinhaInfo('Remetente', e.remetente),
+          if (e.rastreio.isNotEmpty) LinhaInfo('Rastreio', e.rastreio),
           LinhaInfo('Descrição', e.descricao + (e.fragil ? ' (frágil)' : '') + (e.grande ? ' (grande porte)' : '')),
           if (!entrega) ...[
             LinhaInfo('Recebida em', dataHora(e.recebidaEm)),

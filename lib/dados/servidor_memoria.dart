@@ -210,7 +210,7 @@ Map<String, List<Map<String, dynamic>>> tabelasDemonstracao() {
     ],
     'encomendas': [
       enc('e12', {
-        'codigo': 'CX-0012', 'remetente': 'Correios', 'descricao': 'Caixa média', 'token': '4827', 'fragil': true,
+        'codigo': 'CX-0012', 'remetente': 'Correios', 'descricao': 'Caixa média', 'rastreio': 'BR123456789BR', 'token': '4827', 'fragil': true,
         'status': 'aguardando', 'recebidaEm': chegou, 'porteiroRecebeu': 'P001',
         'eventos': [
           {'data': chegou, 'texto': 'Recebida na portaria por José Pereira (P001)'},

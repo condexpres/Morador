@@ -38,6 +38,7 @@ class Encomenda {
     required this.codigo,
     required this.remetente,
     required this.descricao,
+    this.rastreio = '',
     required this.token,
     required this.recebidaEm,
     required this.recebidaPor,
@@ -54,6 +55,9 @@ class Encomenda {
   final String codigo;
   final String remetente;
   final String descricao;
+
+  /// Código de rastreio da transportadora (opcional).
+  final String rastreio;
 
   /// [RD 03] Código de retirada que o morador mostra ao porteiro
   final String token;
@@ -83,6 +87,7 @@ class Encomenda {
       codigo: '${j['codigo'] ?? ''}',
       remetente: '${j['remetente'] ?? ''}',
       descricao: '${j['descricao'] ?? ''}',
+      rastreio: '${j['rastreio'] ?? ''}',
       token: '${j['token'] ?? ''}',
       fragil: j['fragil'] == true,
       grande: j['grande'] == true,
